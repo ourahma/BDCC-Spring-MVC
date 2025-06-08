@@ -11,7 +11,7 @@ layout:decorate="layout1">
 <body>
 <div class="p-3" layout:fragment="content1">
     <div class="p-3">
-        <a class="btn btn-primary" th:href="@{newProduct}">New Product</a>
+        <a class="btn btn-primary" th:href="@{/admin/newProduct}">New Product</a>
     </div>
     <table class="table ">
         <thead class="table-header">
@@ -26,7 +26,7 @@ layout:decorate="layout1">
             <td>
                 <a class="btn btn-danger"
                    onclick="return confirm('Etes vous sûre de vouloir supprimer ? ')"
-                   th:href="@{delete(id=${p.id})}">Delete</a>
+                   th:href="@{/admin/delete(id=${p.id})}">Delete</a>
             </td>
         </tr>
         </tbody>
