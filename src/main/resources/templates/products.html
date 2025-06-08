@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
 layout:decorate="layout1">
 <head>
     <meta charset="UTF-8">
@@ -10,7 +11,7 @@ layout:decorate="layout1">
 </head>
 <body>
 <div class="p-3" layout:fragment="content1">
-    <div class="p-3">
+    <div class="p-3" sec:authorize="hasRole('ADMIN')">
         <a class="btn btn-primary" th:href="@{/admin/newProduct}">New Product</a>
     </div>
     <table class="table ">
@@ -23,10 +24,15 @@ layout:decorate="layout1">
             <td th:text="${p.name}"></td>
             <td th:text="${p.price}"></td>
             <td th:text="${p.quantity}"></td>
-            <td>
-                <a class="btn btn-danger"
-                   onclick="return confirm('Etes vous sûre de vouloir supprimer ? ')"
-                   th:href="@{/admin/delete(id=${p.id})}">Delete</a>
+            <td sec:authorize="hasRole('ADMIN')">
+                <form th:action="@{/admin/delete(id=${p.id})}" method="post">
+                    <button type="submit" class="btn btn-danger"
+                       onclick="return confirm('Etes vous sûre de vouloir supprimer ? ')">
+                        <i class="bi bi-trash-fill"></i>
+                        Delete
+                       </button>
+                </form>
+
             </td>
         </tr>
         </tbody>

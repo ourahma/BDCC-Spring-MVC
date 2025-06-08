@@ -1,5 +1,6 @@
 package net.ourahma.bdccfsspringmvc.web;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import net.ourahma.bdccfsspringmvc.entities.Product;
@@ -7,6 +8,7 @@ import net.ourahma.bdccfsspringmvc.repository.ProductRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -55,9 +57,27 @@ public class ProductController {
 
     }
     // supprimer des produits
-    @GetMapping("/admin/delete")
+    @PostMapping("/admin/delete")
     public String delete(@RequestParam(name="id") Long id){
         productRepository.deleteById(id);
-        return "redirect:/index";
+        return "redirect:/user/index";
+    }
+
+    // la page d'erreur
+    @GetMapping("/notAuthorized")
+    public String notAuthorized(){
+        return "notAuthorized";
+    }
+    // la page login personnélisée
+    @GetMapping("/login")
+    public String login(){
+        return "login";
+    }
+
+    // la fontionnalité logout
+    @GetMapping("/logout")
+    public String logout(HttpSession httpSession){
+        httpSession.invalidate();
+        return "redirect:login";
     }
 }

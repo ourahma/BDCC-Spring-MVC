@@ -39,11 +39,14 @@ public class SecurityConfig {
          * permitALL : ne nécessite pas d'authentification
          * **/
         return http
-                .formLogin(Customizer.withDefaults())
+                .formLogin(fl ->fl.loginPage("/login").permitAll())
+                //.csrf(csrf -> csrf.disable()) // à désactiver seulement dans authentification stateless
+                .csrf(Customizer.withDefaults())
                 .authorizeHttpRequests(ar -> ar.requestMatchers("/user/**").hasRole("USER"))
                 .authorizeHttpRequests(ar -> ar.requestMatchers("/admin/**").hasRole("ADMIN"))
-                .authorizeHttpRequests(ar -> ar.requestMatchers("/public/*").permitAll())
+                .authorizeHttpRequests(ar -> ar.requestMatchers("/public/*","/webjars/**").permitAll())
                 .authorizeHttpRequests(ar -> ar.anyRequest().authenticated())
+                .exceptionHandling( eh -> eh.accessDeniedPage("/notAuthorized"))
                 .build(
 
         );
