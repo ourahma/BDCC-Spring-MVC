@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+layout:decorate="layout1">
+<head>
+    <meta charset="UTF-8">
+    <title>List des produits</title>
+
+
+</head>
+<body>
+<div layout:fragment="content1">
+    <div class="d-flex p-0 flex-column align-items-center justify-content-center min-vh-100 bg-light">
+
+    <form method="post" th:action="@{/saveProduct}" class="row g-3 p-4 rounded shadow form-container bg-white">
+        <h5 class="row mt-0 text-center">Ajouter des produits</h5>
+        <div class="row g-3  align-items-center">
+            <div class="col-3">
+                <label for="inputName" class="col-form-label">Name</label>
+            </div>
+            <div class="col-4">
+                <input type="text" id="inputName" class="form-control" name="name" th:value="${product.name}" aria-describedby="nameHelpInline">
+            </div>
+            <div class="col-5">
+            <span id="nameHelpInline" th:errors="${product.name}" class="form-text text-danger"></span>
+            </div>
+        </div>
+        <div class="row g-3 align-items-center">
+            <div class="col-3">
+                <label for="inputPrice" class="col-form-label">Price</label>
+            </div>
+            <div class="col-4">
+                <input type="text" id="inputPrice" class="form-control" name="price" th:value="${product.price}" aria-describedby="priceHelpInline">
+            </div>
+            <div class="col-5">
+                <span id="priceHelpInline" th:errors="${product.price}" class="form-text text-danger"></span>
+            </div>
+        </div>
+        <div class="row g-3 align-items-center">
+            <div class="col-3">
+                <label for="inputQuantity" class="col-form-label">Quantity</label>
+            </div>
+            <div class="col-4">
+                <input type="text" id="inputQuantity" class="form-control" name="quantity" th:value="${product.quantity}" aria-describedby="quantityHelpInline">
+            </div>
+            <div class="col-5">
+                <span id="quantityHelpInline" th:errors="${product.quantity}" class="form-text text-danger"></span>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary" >
+            <i class="bi bi-save pr-2"></i>
+            Save</button>
+    </form>
+</div>
+</div>
+</body>
+</html>
