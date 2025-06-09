@@ -6,11 +6,15 @@ layout:decorate="layout1">
 <head>
     <meta charset="UTF-8">
     <title>List des produits</title>
-
-
 </head>
 <body>
 <div class="p-3" layout:fragment="content1">
+    <form method="get" class="d-flex align-items-center gap-2" th:action="@{/user/index}">
+        <label for="search" class="form-label mb-0">Keyword : </label>
+        <input type="text" class="form-control" id="search"
+               name="keyword" th:value="${keyword}" placeholder="Mot-clé" style="width: 200px;">
+        <button type="submit" class="btn btn-success"><i class="bi bi-search"></i></button>
+    </form>
     <div class="p-3" sec:authorize="hasRole('ADMIN')">
         <a class="btn btn-primary" th:href="@{/admin/newProduct}">New Product</a>
     </div>
@@ -34,9 +38,21 @@ layout:decorate="layout1">
                 </form>
 
             </td>
+            <td th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
+                <a
+                        th:href="@{/admin/editProduct(id=${p.id}, keyword=${keyword}, page=${currentPage})}"
+                        class="btn btn-success"><i class="bi bi-pen"></i> Editer </a>
+            </td>
         </tr>
         </tbody>
     </table>
+    <ul class="nav nav-pills">
+        <li th:each="value, item:${pages}">
+            <a th:href="@{/user/index(page=${item.index}, keyword=${keyword})}"
+               th:class="${currentPage==item.index?'btn btn-info ms-1':'btn btn-outline-info ms-1'}"
+               th:text="${1+item.index}"></a>
+        </li>
+        </ul>
 </div>
 </body>
 </html>

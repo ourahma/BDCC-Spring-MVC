@@ -3,9 +3,14 @@ package net.ourahma.bdccfsspringmvc.sec;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
@@ -13,6 +18,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration //pour indiquer que c une classe de configuraton
 @EnableWebSecurity // pour activer la sécurité web
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     @Bean
@@ -29,6 +35,15 @@ public class SecurityConfig {
         );
     }
 
+    //@Bean
+    public UserDetailsService userDetailsService(){
+        return new UserDetailsService() {
+            @Override
+            public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+                return null;
+            }
+        };
+    }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         // spécifier la stratégie de sécurité
@@ -42,8 +57,8 @@ public class SecurityConfig {
                 .formLogin(fl ->fl.loginPage("/login").permitAll())
                 //.csrf(csrf -> csrf.disable()) // à désactiver seulement dans authentification stateless
                 .csrf(Customizer.withDefaults())
-                .authorizeHttpRequests(ar -> ar.requestMatchers("/user/**").hasRole("USER"))
-                .authorizeHttpRequests(ar -> ar.requestMatchers("/admin/**").hasRole("ADMIN"))
+                //.authorizeHttpRequests(ar -> ar.requestMatchers("/user/**").hasRole("USER"))
+                //.authorizeHttpRequests(ar -> ar.requestMatchers("/admin/**").hasRole("ADMIN"))
                 .authorizeHttpRequests(ar -> ar.requestMatchers("/public/*","/webjars/**").permitAll())
                 .authorizeHttpRequests(ar -> ar.anyRequest().authenticated())
                 .exceptionHandling( eh -> eh.accessDeniedPage("/notAuthorized"))

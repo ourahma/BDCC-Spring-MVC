@@ -20,7 +20,7 @@ public class BdccFsSpringMvcApplication {
     @Bean
     CommandLineRunner start(ProductRepository productrepository) {
         return args -> {
-            //ajouter des produite
+            //ajouter des produits
             productrepository.save(Product.builder()
                     .name("Computer")
                     .price(5400)

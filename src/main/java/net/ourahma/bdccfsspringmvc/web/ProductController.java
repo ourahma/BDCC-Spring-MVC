@@ -5,6 +5,9 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import net.ourahma.bdccfsspringmvc.entities.Product;
 import net.ourahma.bdccfsspringmvc.repository.ProductRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -21,19 +24,31 @@ public class ProductController {
 
 
     @GetMapping("/user/index")
-    public String index(Model model){
-        List<Product> products = productRepository.findAll();
-        model.addAttribute("productsList", products);
+    @PreAuthorize("hasRole('USER')")
+    public String index(Model model,
+                        @RequestParam(name="page",defaultValue = "0")int page,
+                        @RequestParam(name="size",defaultValue = "5")int size,
+                        @RequestParam(name="keyword",defaultValue = "")String keyword){
+        Page<Product> pageProduct = productRepository.findByNameContains(keyword, PageRequest.of(page,size));
+
+        //List<Product> products = productRepository.findAll();
+        model.addAttribute("productsList", pageProduct.getContent());
+        model.addAttribute("pages",new int[pageProduct.getTotalPages()]);
+        model.addAttribute("currentPage",page);
+        model.addAttribute("keyword",keyword);
         return "products";
     }
     // la page par défaut
     @GetMapping("/")
-    public String home(){
-        return "redirect:/user/index";
+    public String home(@RequestParam(name="page",defaultValue = "0")int page,
+                       @RequestParam(name="size",defaultValue = "5")int size,
+                       @RequestParam(name="keyword",defaultValue = "")String keyword){
+        return "redirect:/user/index?page="+page+"&keyword="+keyword;
     }
 
     // la page d'ajout des nouveaus produite
     @GetMapping("/admin/newProduct")
+    @PreAuthorize("hasRole('ADMIN')")
     public String newProduct(Model model){
         model.addAttribute("product", new Product());
         return "new-product";
@@ -46,21 +61,30 @@ public class ProductController {
      * lorsque on saisit les données elles sont stockées automatiquement dans le modèle donc il faut le déclarer
      * ***/
     @PostMapping("/admin/saveProduct")
-    public String saveProduct(@Valid Product product, BindingResult bindingResult, Model model){
+    @PreAuthorize("hasRole('ADMIN')")
+    public String saveProduct(@Valid Product product, BindingResult bindingResult, Model model,
+                              @RequestParam(name = "keyword", defaultValue = "") String keyword,
+                              @RequestParam(name = "page", defaultValue = "0") int page){
         System.out.println("save product"+product);
         if(bindingResult.hasErrors()){
             return "new-product";
         }else{
             productRepository.save(product);
+            model.addAttribute("keyword", keyword);
+            model.addAttribute("page", page);
             return "redirect:/admin/newProduct";
         }
 
     }
     // supprimer des produits
     @PostMapping("/admin/delete")
-    public String delete(@RequestParam(name="id") Long id){
+    @PreAuthorize("hasRole('ADMIN')")
+    public String delete(@RequestParam(name="id") Long id,
+                         @RequestParam(name="page",defaultValue = "0")int page,
+                         @RequestParam(name="size",defaultValue = "5")int size,
+                         @RequestParam(name="keyword",defaultValue = "")String keyword){
         productRepository.deleteById(id);
-        return "redirect:/user/index";
+        return "redirect:/user/index?page=" +page+ "&keyword="+keyword;
     }
 
     // la page d'erreur
@@ -80,4 +104,17 @@ public class ProductController {
         httpSession.invalidate();
         return "redirect:login";
     }
+
+    //retoutner la page de modification
+    @GetMapping("/admin/editProduct")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String editProduct(Model model, Long id, String keyword, int page){
+        Product product = productRepository.findById(id).orElse(null);
+        if(product == null)throw new RuntimeException("Product introuvable");
+        model.addAttribute("product", product);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("page", page);
+        return "editProduct";
+    }
+
 }
